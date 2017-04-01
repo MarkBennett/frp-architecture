@@ -1,0 +1,9 @@
+{
+  "name": "frp-architecture",
+  "version": "1.0.0",
+  "description": "A demonstration of a functional reactive programming architecture using the classic TODO list example. Prepared for a talk at Exchange.js.",
+  "main": "index.js",
+  "repository": "https://github.com/MarkBennett/frp-architecture.git",
+  "author": "Mark Bennett",
+  "license": "MIT"
+}
