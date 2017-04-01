@@ -1,6 +1,10 @@
 (function (window) {
 	'use strict';
 
+	const TODOS_CREATE = "TODOS_CREATE";
+	const TODO_CHANGE = "TODO_CHANGE";
+	const TODO_DESTROY = "TODO_DESTROY";
+
 	const initial_state = {
 		todos: [
 			{ 
@@ -15,26 +19,40 @@
 
 	const reducer = (state, action) => {
 		console.log("REDUCING");
-		// no-op
-		return state;
+
+		switch (action.type) {
+			case TODOS_CREATE:
+				const new_todo = { 
+					description: "I'm a new todo!",
+					completed: false
+				};
+				state.todos.push(new_todo);
+				return state;
+
+			case TODO_CHANGE:
+				state.todos[0].description = "I'm changed!";
+				return state;
+
+			case TODO_DESTROY:
+				state.todos.pop();
+				return state;
+
+			default:
+				// no-op
+				return state;
+		}
 	};
 
-	const store$ = actions$.scan(reducer, initial_state);
+	const store$ = actions$.scan(reducer, initial_state).startWith(initial_state);
 
 	const renderer = (previous_dom, state) => {
 		console.log("RENDER STATE");
-		console.log(previous_dom);
-		console.log(state);
 
 		// TODO: snabbdom it here
 		return "NEW_DOM";
 	};
 
 	store$.scan(renderer, "DOM_NODE").subscribe((val) => { "no-op" });
-
-	const TODOS_CREATE = "TODOS_CREATE";
-	const TODO_CHANGE = "TODO_CHANGE";
-	const TODO_DESTROY = "TODO_DESTROY";
 
 	actions$.next({type: TODOS_CREATE});
 	actions$.next({type: TODO_CHANGE});
