@@ -45,17 +45,27 @@
 
 	const store$ = actions$.scan(reducer, initial_state).startWith(initial_state);
 
+	const e = h.default;
+	const patch = snabbdom.init([]);
+	const container = document.getElementById("mytodo");
+
 	const renderer = (previous_dom, state) => {
 		console.log("RENDER STATE");
 
-		// TODO: snabbdom it here
-		return "NEW_DOM";
+		const todos_dom = state.todos.map((todo) => e("li#todo", todo.description));
+		const current_dom =
+			e("div#todos", [
+				e("ul", todos_dom)
+			]);
+
+		patch(previous_dom, current_dom);
+
+		return current_dom;
 	};
 
-	store$.scan(renderer, "DOM_NODE").subscribe((val) => { "no-op" });
+	store$.scan(renderer, container).subscribe((val) => { "no-op" });
 
-	actions$.next({type: TODOS_CREATE});
-	actions$.next({type: TODO_CHANGE});
-	actions$.next({type: TODO_DESTROY});
-
+	setTimeout(() => { actions$.next({type: TODOS_CREATE});  }, 5 * 1000);
+	setTimeout(() => { actions$.next({type: TODO_CHANGE}); }, 10 * 1000);
+	setTimeout(() => { actions$.next({type: TODO_DESTROY}); }, 15 * 1000);
 })(window);
