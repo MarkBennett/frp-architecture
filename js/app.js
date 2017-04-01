@@ -10,9 +10,10 @@
 		]
 	};
 
-	const action$ = new Rx.Subject();
+	// TODO: Replace this Subject with an Observable concatting together a bunch of action observables
+	const actions$ = new Rx.Subject();
 
-	const store$ = action$.startWith(initial_state);
+	const store$ = actions$.startWith(initial_state);
 
 	const reducer = (state, action) => {
 		// no-op
@@ -23,7 +24,7 @@
 		console.log("RENDER STATE");
 		console.dir(state);
 
-		
+
 	};
 
 	store$.scan(reducer).subscribe(renderer)
