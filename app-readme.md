@@ -1,14 +1,12 @@
-# RX.js • [TodoMVC](http://todomvc.com)
+# Framework Name • [TodoMVC](http://todomvc.com)
 
-> The Reactive Extensions for JavaScript
-
-A demonstration of a functional reactive programming architecture using RX.js and the classic TODO list example. Prepared for a talk at Exchange.js.
+> Official description of the framework (from its website)
 
 
 ## Resources
 
-- [Website](http://reactivex.io)
-- [Documentation](http://reactivex.io/)
+- [Website]()
+- [Documentation]()
 - [Used by]()
 - [Blog]()
 - [FAQ]()
@@ -35,4 +33,3 @@ How was the app created? Anything worth sharing about the process of creating th
 ## Credit
 
 Created by [Your Name](http://your-website.com)
-
