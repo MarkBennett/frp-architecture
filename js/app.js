@@ -14,8 +14,9 @@
 		]
 	};
 
-	// TODO: Replace this Subject with an Observable concatting together a bunch of action observables
-	const actions$ = new Rx.Subject();
+	const interval$ = Rx.Observable.interval(1000);
+	const val$ = Rx.Observable.of(TODOS_CREATE, TODO_CHANGE, TODO_DESTROY);
+	const actions$ =  Rx.Observable.zip(val$, interval$, (val, i) =>  { return { type: val } });
 
 	const reducer = (state, action) => {
 		console.log("REDUCING");
@@ -64,8 +65,4 @@
 	};
 
 	store$.scan(renderer, container).subscribe((val) => { "no-op" });
-
-	setTimeout(() => { actions$.next({type: TODOS_CREATE});  }, 5 * 1000);
-	setTimeout(() => { actions$.next({type: TODO_CHANGE}); }, 10 * 1000);
-	setTimeout(() => { actions$.next({type: TODO_DESTROY}); }, 15 * 1000);
 })(window);
