@@ -44,7 +44,7 @@
 		}
 	};
 
-	const store$ = actions$.scan(reducer, initial_state).startWith(initial_state);
+	const store$ = actions$.startWith(initial_state).scan(reducer);
 
 	const e = h.default;
 	const patch = snabbdom.init([]);
