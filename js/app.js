@@ -3,6 +3,7 @@
 
 	const TODOS_CREATE = "TODOS_CREATE";
 	const TODO_CHANGE = "TODO_CHANGE";
+	const TODO_DONE = "TODO_DONE";
 	const TODO_DESTROY = "TODO_DESTROY";
 
 	const initial_state = {
@@ -15,7 +16,7 @@
 	};
 
 	const interval$ = Rx.Observable.interval(1000);
-	const val$ = Rx.Observable.of(TODOS_CREATE, TODO_CHANGE, TODO_DESTROY);
+	const val$ = Rx.Observable.of(TODOS_CREATE, TODO_CHANGE, TODO_DONE, TODO_DESTROY);
 	const actions$ =  Rx.Observable.zip(val$, interval$, (val, i) =>  { return { type: val } });
 
 	const reducer = (state, action) => {
@@ -32,6 +33,10 @@
 
 			case TODO_CHANGE:
 				state.todos[0].description = "I'm changed!";
+				return state;
+
+			case TODO_DONE:
+				state.todos[0].completed = true;
 				return state;
 
 			case TODO_DESTROY:
@@ -53,20 +58,49 @@
 	]);
 	const container = document.getElementById("mytodo");
 
+	const renderHeader = (state) => {
+		const dom =
+			e("header.header", [
+				e("h1","todos"),
+				e("input.new-todo", { attrs: { placeholder: "What needs to be done?", autofocus: true } } )
+			]);
+
+		return dom;	
+	};
+
 	const renderTodo = (todo) => {
-		return e("li#todo", todo.description);
+		const dom =
+			e("li", [
+				e("div.view", [
+					e("input.toggle", { attrs: { type: "checkbox", checked: todo.completed } }),
+					e("label", todo.description),
+					e("button.destroy")
+				])
+			]);
+
+		return dom;
+	};
+
+	const renderMain = (state) => {
+		const todos_dom = state.todos.map(renderTodo);
+
+		const dom =
+			e("section.main", [
+				e("input.toggle-all", { attrs: { type: "checkbox" } }),
+				e("label", { attrs: { for: "toggle-all" } }, "Mark all as complete"),
+				e("el.todo-list", todos_dom)
+			])
+
+		return dom;
 	};
 
 	const renderer = (previous_dom, state) => {
 		console.log("RENDER STATE");
 
-		const todos_dom = state.todos.map(renderTodo);
 		const current_dom =
 			e("section.todoapp", [
-				e("header.header", [
-					e("h1","todos"),
-					e("input.new-todo", { attrs: { placeholder: "What needs to be done?", autofocus: true } } )
-				])
+				renderHeader(state),
+				renderMain(state)				
 			]);
 
 		patch(previous_dom, current_dom);
