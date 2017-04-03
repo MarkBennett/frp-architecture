@@ -47,16 +47,26 @@
 	const store$ = actions$.startWith(initial_state).scan(reducer);
 
 	const e = h.default;
-	const patch = snabbdom.init([]);
+	const patch = snabbdom.init([
+		snabbdom_attributes.default,
+		snabbdom_eventlisteners.default
+	]);
 	const container = document.getElementById("mytodo");
+
+	const renderTodo = (todo) => {
+		return e("li#todo", todo.description);
+	};
 
 	const renderer = (previous_dom, state) => {
 		console.log("RENDER STATE");
 
-		const todos_dom = state.todos.map((todo) => e("li#todo", todo.description));
+		const todos_dom = state.todos.map(renderTodo);
 		const current_dom =
-			e("div#todos", [
-				e("ul", todos_dom)
+			e("section.todoapp", [
+				e("header.header", [
+					e("h1","todos"),
+					e("input.new-todo", { attrs: { placeholder: "What needs to be done?", autofocus: true } } )
+				])
 			]);
 
 		patch(previous_dom, current_dom);
