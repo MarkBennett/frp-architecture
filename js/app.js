@@ -1,6 +1,7 @@
 (function (window) {
 	'use strict';
 
+	const NEW_TODO_EDIT = "NEW_TODO_EDIT";
 	const TODOS_CREATE = "TODOS_CREATE";
 	const TODO_CHANGE = "TODO_CHANGE";
 	const TODO_DONE = "TODO_DONE";
@@ -24,6 +25,10 @@
 		console.log("REDUCING");
 
 		switch (action.type) {
+			case NEW_TODO_EDIT:
+				state.new_todo_description = action.payload;
+				return state;
+
 			case TODOS_CREATE:
 				const new_todo = { 
 					description: action.payload,
@@ -62,15 +67,21 @@
 	const patch = snabbdom.init([
 		snabbdom_attributes.default,
 		snabbdom_class.default,
-		snabbdom_eventlisteners.default
+		snabbdom_eventlisteners.default,
+		snabbdom_props.default
 	]);
 	const container = document.getElementById("mytodo");
 
 	const newTodoInputKeypressHandler = (e) => {
+		actions$.next({
+			type: NEW_TODO_EDIT,
+			payload: e.target.value
+		})
+		
 		if (e.which === ENTER_KEY) {
 			actions$.next({
 				type: TODOS_CREATE,
-				payload: "New todo"
+				payload: e.target.value
 			});
 		}
 	};
@@ -82,9 +93,9 @@
 				e("input.new-todo",
 					{
 						attrs: { placeholder: "What needs to be done?", autofocus: true },
-						on: { keypress: newTodoInputKeypressHandler }
-					},
-					state.new_todo_description
+						on: { keypress: newTodoInputKeypressHandler },
+						props: { value: state.new_todo_description }
+					}
 				)
 			]);
 
