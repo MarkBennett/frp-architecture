@@ -6,13 +6,16 @@
 	const TODO_DONE = "TODO_DONE";
 	const TODO_DESTROY = "TODO_DESTROY";
 
+	const ENTER_KEY = 13;
+
 	const initial_state = {
 		todos: [
 			{ 
 				description: "Build a FRP todo demo",
 				completed: false
 			}
-		]
+		],
+		new_todo_description: ""
 	};
 
 	const actions$ =  new Rx.Subject();
@@ -23,10 +26,12 @@
 		switch (action.type) {
 			case TODOS_CREATE:
 				const new_todo = { 
-					description: "I'm a new todo!",
+					description: action.payload,
 					completed: false
 				};
 				state.todos.push(new_todo);
+				state.new_todo_description = "";
+
 				return state;
 
 			case TODO_CHANGE:
@@ -61,11 +66,26 @@
 	]);
 	const container = document.getElementById("mytodo");
 
+	const newTodoInputKeypressHandler = (e) => {
+		if (e.which === ENTER_KEY) {
+			actions$.next({
+				type: TODOS_CREATE,
+				payload: "New todo"
+			});
+		}
+	};
+
 	const renderHeader = (state) => {
 		const dom =
 			e("header.header", [
 				e("h1","todos"),
-				e("input.new-todo", { attrs: { placeholder: "What needs to be done?", autofocus: true } } )
+				e("input.new-todo",
+					{
+						attrs: { placeholder: "What needs to be done?", autofocus: true },
+						on: { keypress: newTodoInputKeypressHandler }
+					},
+					state.new_todo_description
+				)
 			]);
 
 		return dom;	
@@ -113,13 +133,18 @@
 		return dom;
 	};
 
+	const renderFooter = (state) => {
+		return;
+	};
+
 	const renderer = (previous_dom, state) => {
 		console.log("RENDER STATE");
 
 		const current_dom =
 			e("section.todoapp", [
 				renderHeader(state),
-				renderMain(state)				
+				renderMain(state),
+				renderFooter(state)				
 			]);
 
 		patch(previous_dom, current_dom);
