@@ -30,7 +30,11 @@
 				return state;
 
 			case TODO_CHANGE:
-				state.todos[0].description = "I'm changed!";
+				let todo = state.todos[action.id];
+
+				todo.description = action.payload.description;
+				todo.completed = action.payload.completed;
+
 				return state;
 
 			case TODO_DONE:
@@ -69,7 +73,12 @@
 
 	const todoCheckboxChangedHandler = (i, todo) => {
 		actions$.next({
-			type: TODOS_CREATE
+			type: TODO_CHANGE,
+			id: i,
+			payload: {
+				description: todo.description,
+				completed: !todo.completed
+			}
 		});
 	}
 
