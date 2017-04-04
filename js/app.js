@@ -145,7 +145,16 @@
 	};
 
 	const renderFooter = (state) => {
-		return;
+		const dom =
+			e("footer.footer", [
+				e("span.todo-count", [
+					e("strong", "0"),
+					" item left"
+				]),
+				e("button.clear-completed", "Clear completed")
+			]);
+
+		return dom;
 	};
 
 	const renderer = (previous_dom, state) => {
