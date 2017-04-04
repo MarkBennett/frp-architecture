@@ -15,9 +15,7 @@
 		]
 	};
 
-	const interval$ = Rx.Observable.interval(1000);
-	const val$ = Rx.Observable.of(TODOS_CREATE, TODO_CHANGE, TODO_DONE, TODO_DESTROY);
-	const actions$ =  Rx.Observable.zip(val$, interval$, (val, i) =>  { return { type: val } });
+	const actions$ =  new Rx.Subject();
 
 	const reducer = (state, action) => {
 		console.log("REDUCING");
@@ -69,11 +67,22 @@
 		return dom;	
 	};
 
-	const renderTodo = (todo) => {
+	const todoCheckboxChangedHandler = (i, todo) => {
+		actions$.next({
+			type: TODOS_CREATE
+		});
+	}
+
+	const renderTodo = (todo, i) => {
 		const dom =
 			e("li", { class: { completed: todo.completed } }, [
 				e("div.view", [
-					e("input.toggle", { attrs: { type: "checkbox", checked: todo.completed } }),
+					e("input.toggle",
+						{
+							attrs: { type: "checkbox", checked: todo.completed },
+							on: { click: [ todoCheckboxChangedHandler, i, todo ] }
+						}
+					),
 					e("label", todo.description),
 					e("button.destroy")
 				])
