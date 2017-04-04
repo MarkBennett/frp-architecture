@@ -54,6 +54,7 @@
 	const e = h.default;
 	const patch = snabbdom.init([
 		snabbdom_attributes.default,
+		snabbdom_class.default,
 		snabbdom_eventlisteners.default
 	]);
 	const container = document.getElementById("mytodo");
@@ -70,7 +71,7 @@
 
 	const renderTodo = (todo) => {
 		const dom =
-			e("li", [
+			e("li", { class: { completed: todo.completed } }, [
 				e("div.view", [
 					e("input.toggle", { attrs: { type: "checkbox", checked: todo.completed } }),
 					e("label", todo.description),
