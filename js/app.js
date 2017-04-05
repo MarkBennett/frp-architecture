@@ -12,11 +12,12 @@
 	//   * Receives events from outside the application
 	//   * Pushes side effects outside the application
 	//
-	// This will also make heavy use of the Observable pattern, and RxJS. For
-	// this demonstration it's important to understand that an Observable is a
-	// sequence of values which emitted in a particular order over time. Many
-	// operations on Observables are similar to those on Arrays or Iterables,
-	// however Observables also include operators which understand time.
+	// This will also make heavy use of the Observable pattern, and RxJS.
+	// For this demonstration it's important to understand that an Observable
+	// is a sequence of values which emitted in a particular order over time.
+	// Many operations on Observables are similar to those on Arrays or
+	// Iterables, however Observables also include operators which understand
+	// time such as `debounce()`, `throttle()`, `switchMap()`, etc.
 	//=========================================================================
 
 
