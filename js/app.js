@@ -199,7 +199,8 @@
 				e("input.edit",
 					{
 						props: { value: todo.description },
-						on: { blur: todoEditBlurHandler, keypress: [ todoEditKeypress, i, todo ] }
+						on: { blur: todoEditBlurHandler, keypress: [ todoEditKeypress, i, todo ] },
+						hook: { update: (oldv, newv) => { todo.being_edited ? newv.elm.focus() : newv.elm.blur() } }
 					}
 				)
 			]);
