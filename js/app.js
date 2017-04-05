@@ -1,6 +1,13 @@
 (function (window) {
 	'use strict';
 
+
+	//=========================================================================
+	// CONSTANTS
+	//
+	// You'll thank me for these later.
+	//=========================================================================
+
 	const NEW_TODO_EDIT = "NEW_TODO_EDIT";
 	const TODOS_CREATE = "TODOS_CREATE";
 	const TODOS_CLEAR_CCOMPLETED = "TODOS_CLEAR_CCOMPLETED";
@@ -11,7 +18,7 @@
 
 	const ENTER_KEY = 13;
 
-	const initial_state = {
+	const INITIAL_STATE = {
 		todos: [
 			{ 
 				description: "Build a todo demo",
@@ -27,9 +34,48 @@
 		new_todo_description: ""
 	};
 
+
+
+
+	//=========================================================================
+	// THE INTENTS
+	//
+	// An intent describe how we would like our model to change at any given
+	// moment in time. Each intent includes all the information neccesary to
+	// modify the current state.
+	//
+	// The `intents$` is an observable which collects and emits new intents
+	// throughout the lifetime of the application.
+	//
+	// For example, if we want to edit an existing todo we'd emit a new intent
+	// like this:
+	//
+	//     {
+	//         type: TODO_CHANGE,
+	//         id: 1,
+	//         payload: {
+	//             description: "New description"
+	//         }
+	//     }
+	//
+	// This intent clearly identifies it's type, the todo affected, and the
+	// value to change. The payload contents is specific to each intent.
+	//=========================================================================
+
 	const actions$ =  new Rx.Subject();
 
+	const merged_actions$ = actions$.merge()
+
 	window.actions$ = actions$;
+
+	//=========================================================================
+	// THE "REDUCER"
+	//
+	// As new intents are emitted the reducer processes them and, given the
+	// current state, emits a new state.
+	//
+	// For example,
+	//=========================================================================
 
 	const reducer = (state, action) => {
 		console.log("REDUCING");
@@ -89,6 +135,10 @@
 		}
 	};
 
+	//=========================================================================
+	// RENDERING
+	//=========================================================================
+
 	const e = h.default;
 	const patch = snabbdom.init([
 		snabbdom_attributes.default,
@@ -96,7 +146,6 @@
 		snabbdom_eventlisteners.default,
 		snabbdom_props.default
 	]);
-	const container = document.getElementById("mytodo");
 
 	const newTodoInputKeypressHandler = (e) => {
 		actions$.next({
@@ -266,7 +315,15 @@
 		return current_dom;
 	};
 
-	const store$ = actions$.startWith(initial_state).scan(reducer);
+	//=========================================================================
+	// WIRE IT UP
+	//=========================================================================
 
-	store$.scan(renderer, container).subscribe((_) => { "no-op" });
+	// Intents -> Model -> View
+	// Create our state
+	const store$ = actions$.startWith(INITIAL_STATE).scan(reducer);
+
+	// Render the state as it changes
+	const app_element = document.getElementById("mytodo");
+	store$.startWith(app_element).scan(renderer).subscribe((_) => { "no-op" });
 })(window);
