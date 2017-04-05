@@ -142,7 +142,8 @@
 				e("div.view", [
 					e("input.toggle",
 						{
-							attrs: { type: "checkbox", checked: todo.completed },
+							attrs: { type: "checkbox" },
+							props: { checked: todo.completed },
 							on: { click: [ todoCheckboxChangedHandler, i, todo ] }
 						}
 					),
