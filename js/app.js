@@ -145,10 +145,12 @@
 	};
 
 	const renderFooter = (state) => {
+		const incomplete_count = state.todos.filter((todo) => !todo.completed).length
+
 		const dom =
 			e("footer.footer", [
 				e("span.todo-count", [
-					e("strong", "0"),
+					e("strong", incomplete_count),
 					" item left"
 				]),
 				e("button.clear-completed", "Clear completed")
