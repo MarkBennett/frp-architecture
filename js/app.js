@@ -62,11 +62,11 @@
 	// value to change. The payload contents is specific to each intent.
 	//=========================================================================
 
-	const actions$ =  new Rx.Subject();
+	const intents$ =  new Rx.Subject();
 
-	const merged_actions$ = actions$.merge()
+	const merged_intents$ = intents$.merge()
 
-	window.actions$ = actions$;
+	window.intents$ = intents$;
 
 	//=========================================================================
 	// THE "REDUCER"
@@ -77,17 +77,17 @@
 	// For example,
 	//=========================================================================
 
-	const reducer = (state, action) => {
+	const reducer = (state, intent) => {
 		console.log("REDUCING");
 
-		switch (action.type) {
+		switch (intent.type) {
 			case NEW_TODO_EDIT:
-				state.new_todo_description = action.payload;
+				state.new_todo_description = intent.payload;
 				return state;
 
 			case TODOS_CREATE:
 				const new_todo = { 
-					description: action.payload,
+					description: intent.payload,
 					completed: false,
 					being_edited: false
 				};
@@ -97,14 +97,14 @@
 				return state;
 
 			case TODO_CHANGE:
-				let todo = state.todos[action.id];
+				let todo = state.todos[intent.id];
 
-				Object.assign(todo, action.payload);
+				Object.assign(todo, intent.payload);
 
 				return state;
 
 			case TODO_DESTROY:
-				state.todos.splice(action.id, 1);
+				state.todos.splice(intent.id, 1);
 
 				return state;
 
@@ -148,13 +148,13 @@
 	]);
 
 	const newTodoInputKeypressHandler = (e) => {
-		actions$.next({
+		intents$.next({
 			type: NEW_TODO_EDIT,
 			payload: e.target.value
 		})
 		
 		if (e.which === ENTER_KEY) {
-			actions$.next({
+			intents$.next({
 				type: TODOS_CREATE,
 				payload: e.target.value
 			});
@@ -178,7 +178,7 @@
 	};
 
 	const todoCheckboxChangedHandler = (i, todo) => {
-		actions$.next({
+		intents$.next({
 			type: TODO_CHANGE,
 			id: i,
 			payload: {
@@ -190,14 +190,14 @@
 	}
 
 	const destroyClickHandler = (i) => {
-		actions$.next({
+		intents$.next({
 			type: TODO_DESTROY,
 			id: i
 		});
 	};
 
 	const todoDescriptionClickHandler = (i, todo) => {
-		actions$.next({
+		intents$.next({
 			type: TODO_CHANGE,
 			id: i,
 			payload:  Object.assign(todo, { being_edited: true })
@@ -205,20 +205,20 @@
 	};
 
 	const todoEditBlurHandler = (_) => {
-		actions$.next({
+		intents$.next({
 			type: TODOS_CLEAR_ALL_EDITING
 		});
 	};
 
 	const todoEditKeypress = (i, todo, e) => {
-		actions$.next({
+		intents$.next({
 			type: TODO_CHANGE,
 			id: i,
 			payload: { description: e.target.value }
 		});
 
 		if (e.which === ENTER_KEY) {
-			actions$.next({
+			intents$.next({
 				type: TODO_CHANGE,
 				id: i,
 				payload: { being_edited: false }
@@ -258,7 +258,7 @@
 	};
 
 	const toggleAllClickHandler = (e) => {
-		actions$.next({
+		intents$.next({
 			type: TODOS_TOGGLE_ALL
 		});
 	};
@@ -277,7 +277,7 @@
 	};
 
 	const clearCompletedClickHandler = (e) => {
-		actions$.next({
+		intents$.next({
 			type: TODOS_CLEAR_CCOMPLETED
 		});
 	};
@@ -321,7 +321,7 @@
 
 	// Intents -> Model -> View
 	// Create our state
-	const store$ = actions$.startWith(INITIAL_STATE).scan(reducer);
+	const store$ = intents$.startWith(INITIAL_STATE).scan(reducer);
 
 	// Render the state as it changes
 	const app_element = document.getElementById("mytodo");
