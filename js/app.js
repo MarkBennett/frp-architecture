@@ -52,7 +52,8 @@
 				return state;
 
 			case TODO_DESTROY:
-				state.todos.pop();
+				state.todos.splice(action.id, 1);
+
 				return state;
 
 			case TODOS_CLEAR_CCOMPLETED:
@@ -115,6 +116,13 @@
 		});
 	}
 
+	const destroyClickHandler = (i) => {
+		actions$.next({
+			type: TODO_DESTROY,
+			id: i
+		});
+	};
+
 	const renderTodo = (todo, i) => {
 		const dom =
 			e("li", { class: { completed: todo.completed } }, [
@@ -126,7 +134,7 @@
 						}
 					),
 					e("label", todo.description),
-					e("button.destroy")
+					e("button.destroy", { on: { click: [ destroyClickHandler, i ] } })
 				])
 			]);
 
