@@ -7,7 +7,7 @@
 	// For the purposes of this demonstration we're going to describe an FRA as
 	// an application which:
 	//
-	//   * Is composed of simple functions without side effects
+	//   * Is composed of simple pure functions (without side effects)
 	//   * Reacts asynchronously to changing data and events
 	//   * Receives events from outside the application
 	//   * Pushes side effects outside the application
@@ -125,9 +125,13 @@
 	// As new intents are emitted the reducer processes them and, given the
 	// current state, emits a new state.
 	//
-	// It's important to note how this takes the old state and an intent then
-	// produces a new state from that. The original state is not modified, and
-	// the renderer uses a new 
+	// Notice how this takes the old state and an intent then produces a new
+	// state from that. By producting a new state instead of modifying the old
+	// we avoid side effects and ensure we can test all behaviour by testing
+	// the output.
+	//
+	// In larger applications a library like immutable.js can make writing
+	// side-effect free functions more performant.
 	//=========================================================================
 
 	const reducer = (state, intent) => {
