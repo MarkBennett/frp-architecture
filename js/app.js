@@ -4,6 +4,7 @@
 	const NEW_TODO_EDIT = "NEW_TODO_EDIT";
 	const TODOS_CREATE = "TODOS_CREATE";
 	const TODOS_CLEAR_CCOMPLETED = "TODOS_CLEAR_CCOMPLETED";
+	const TODOS_TOGGLE_ALL = "TODOS_TOGGLE_ALL";
 	const TODO_CHANGE = "TODO_CHANGE";
 	const TODO_DESTROY = "TODO_DESTROY";
 
@@ -58,6 +59,18 @@
 
 			case TODOS_CLEAR_CCOMPLETED:
 				state.todos = state.todos.filter((todo) => !todo.completed);
+				return state;
+
+			case TODOS_TOGGLE_ALL:
+				let uncomplete_count = state.todos.filter((todo) => !todo.completed ).length;
+
+				if (uncomplete_count > 0) {
+					// complete all todo's
+					state.todos.forEach((todo) => todo.completed = true);
+				} else {
+					// clear all todos
+					state.todos.forEach((todo) => todo.completed = false);
+				}
 				return state;
 
 			default:
@@ -141,13 +154,19 @@
 		return dom;
 	};
 
+	const toggleAllClickHandler = (e) => {
+		actions$.next({
+			type: TODOS_TOGGLE_ALL
+		});
+	};
+
 	const renderMain = (state) => {
 		const todos_dom = state.todos.map(renderTodo);
 
 		const dom =
 			e("section.main", [
-				e("input.toggle-all", { attrs: { type: "checkbox" } }),
-				e("label", { attrs: { for: "toggle-all" } }, "Mark all as complete"),
+				e("input.toggle-all", { attrs: { type: "checkbox" }, on: { click: toggleAllClickHandler } }),
+				e("label", { attrs: { for: "toggle-all" }, on: { click: toggleAllClickHandler } }, "Mark all as complete"),
 				e("el.todo-list", todos_dom)
 			])
 
