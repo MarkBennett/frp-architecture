@@ -5,7 +5,6 @@
 	const TODOS_CREATE = "TODOS_CREATE";
 	const TODOS_CLEAR_CCOMPLETED = "TODOS_CLEAR_CCOMPLETED";
 	const TODO_CHANGE = "TODO_CHANGE";
-	const TODO_DONE = "TODO_DONE";
 	const TODO_DESTROY = "TODO_DESTROY";
 
 	const ENTER_KEY = 13;
@@ -50,10 +49,6 @@
 				todo.description = action.payload.description;
 				todo.completed = action.payload.completed;
 
-				return state;
-
-			case TODO_DONE:
-				state.todos[0].completed = true;
 				return state;
 
 			case TODO_DESTROY:
