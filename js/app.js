@@ -13,11 +13,11 @@
 	const initial_state = {
 		todos: [
 			{ 
-				description: "Build a FRP todo demo",
+				description: "Build a todo demo",
 				completed: true
 			},
 			{
-				description: "Give an amazing talk",
+				description: "Give a talk",
 				completed: false
 			}
 		],
@@ -25,6 +25,8 @@
 	};
 
 	const actions$ =  new Rx.Subject();
+
+	window.actions$ = actions$;
 
 	const reducer = (state, action) => {
 		console.log("REDUCING");
