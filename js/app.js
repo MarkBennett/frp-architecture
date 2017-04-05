@@ -1,6 +1,35 @@
 (function (window) {
 	'use strict';
 
+	//=========================================================================
+	// FUNCTIONAL REACTIVE ARCHITECTURE (FRA)
+	//
+	// For the purposes of this demonstration we're going to describe an FRA as
+	// an application which:
+	//
+	//   * Is composed of simple functions without side effects
+	//   * Reacts asynchronously to changing data and events
+	//   * Receives events from outside the application
+	//   * Pushes side effects outside the application
+	//
+	// This will also make heavy use of the Observable pattern, and RxJS. For
+	// this demonstration it's important to understand that an Observable is a
+	// sequence of values which emitted in a particular order over time. Many
+	// operations on Observables are similar to those on Arrays or Iterables,
+	// however Observables also include operators which understand time.
+	//=========================================================================
+
+
+
+
+
+
+
+
+
+
+
+
 
 	//=========================================================================
 	// CONSTANTS
@@ -8,6 +37,7 @@
 	// You'll thank me for these later.
 	//=========================================================================
 
+	// Define our intents
 	const NEW_TODO_EDIT = "NEW_TODO_EDIT";
 	const TODOS_CREATE = "TODOS_CREATE";
 	const TODOS_CLEAR_CCOMPLETED = "TODOS_CLEAR_CCOMPLETED";
@@ -16,8 +46,10 @@
 	const TODO_CHANGE = "TODO_CHANGE";
 	const TODO_DESTROY = "TODO_DESTROY";
 
+	// Keyboard constants
 	const ENTER_KEY = 13;
 
+	// Our initial application state
 	const INITIAL_STATE = {
 		todos: [
 			{ 
@@ -33,6 +65,14 @@
 		],
 		new_todo_description: ""
 	};
+
+
+
+
+
+
+
+
 
 
 
@@ -64,9 +104,20 @@
 
 	const intents$ =  new Rx.Subject();
 
-	const merged_intents$ = intents$.merge()
-
 	window.intents$ = intents$;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	//=========================================================================
 	// THE "REDUCER"
@@ -74,7 +125,9 @@
 	// As new intents are emitted the reducer processes them and, given the
 	// current state, emits a new state.
 	//
-	// For example,
+	// It's important to note how this takes the old state and an intent then
+	// produces a new state from that. The original state is not modified, and
+	// the renderer uses a new 
 	//=========================================================================
 
 	const reducer = (state, intent) => {
@@ -135,8 +188,26 @@
 		}
 	};
 
+
+
+
+
+
+
+
+
+
+
 	//=========================================================================
 	// RENDERING
+	//
+	// So much rendering... really you just need to know that it takes the state
+	// and builds DOM elements from it. Event handlers are also added so we can
+	// pipe new intents back into the system.
+	//
+	// To make things faster we use a virtual DOM library (snabbdom) which only
+	// updates the DOM after each render and doesn't recreate the whole thing.
+	// `snabbdom` is great. Seriously, check it out on Github.
 	//=========================================================================
 
 	const e = h.default;
