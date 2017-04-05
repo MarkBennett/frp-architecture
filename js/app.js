@@ -5,6 +5,7 @@
 	const TODOS_CREATE = "TODOS_CREATE";
 	const TODOS_CLEAR_CCOMPLETED = "TODOS_CLEAR_CCOMPLETED";
 	const TODOS_TOGGLE_ALL = "TODOS_TOGGLE_ALL";
+	const TODOS_CLEAR_ALL_EDITING = "TODOS_CLEAR_ALL_EDITING";
 	const TODO_CHANGE = "TODO_CHANGE";
 	const TODO_DESTROY = "TODO_DESTROY";
 
@@ -14,11 +15,13 @@
 		todos: [
 			{ 
 				description: "Build a todo demo",
-				completed: true
+				completed: true,
+				being_edited: false
 			},
 			{
 				description: "Give a talk",
-				completed: false
+				completed: false,
+				being_edited: false
 			}
 		],
 		new_todo_description: ""
@@ -39,7 +42,8 @@
 			case TODOS_CREATE:
 				const new_todo = { 
 					description: action.payload,
-					completed: false
+					completed: false,
+					being_edited: false
 				};
 				state.todos.push(new_todo);
 				state.new_todo_description = "";
@@ -49,8 +53,7 @@
 			case TODO_CHANGE:
 				let todo = state.todos[action.id];
 
-				todo.description = action.payload.description;
-				todo.completed = action.payload.completed;
+				Object.assign(todo, action.payload);
 
 				return state;
 
@@ -73,6 +76,11 @@
 					// clear all todos
 					state.todos.forEach((todo) => todo.completed = false);
 				}
+				return state;
+			
+			case TODOS_CLEAR_ALL_EDITING:
+				state.todos = state.todos.map((todo) => Object.assign(todo, { being_edited: false } ));
+
 				return state;
 
 			default:
@@ -126,7 +134,8 @@
 			id: i,
 			payload: {
 				description: todo.description,
-				completed: !todo.completed
+				completed: !todo.completed,
+				being_edited: false
 			}
 		});
 	}
@@ -138,9 +147,39 @@
 		});
 	};
 
+	const todoDescriptionClickHandler = (i, todo) => {
+		actions$.next({
+			type: TODO_CHANGE,
+			id: i,
+			payload:  Object.assign(todo, { being_edited: true })
+		});
+	};
+
+	const todoEditBlurHandler = (_) => {
+		actions$.next({
+			type: TODOS_CLEAR_ALL_EDITING
+		});
+	};
+
+	const todoEditKeypress = (i, todo, e) => {
+		actions$.next({
+			type: TODO_CHANGE,
+			id: i,
+			payload: { description: e.target.value }
+		});
+
+		if (e.which === ENTER_KEY) {
+			actions$.next({
+				type: TODO_CHANGE,
+				id: i,
+				payload: { being_edited: false }
+			});
+		}
+	};
+
 	const renderTodo = (todo, i) => {
 		const dom =
-			e("li", { class: { completed: todo.completed } }, [
+			e("li", { class: { completed: todo.completed, editing: todo.being_edited } }, [
 				e("div.view", [
 					e("input.toggle",
 						{
@@ -149,9 +188,20 @@
 							on: { click: [ todoCheckboxChangedHandler, i, todo ] }
 						}
 					),
-					e("label", todo.description),
+					e("label",
+						{
+							on: { click: [ todoDescriptionClickHandler, i, todo ] }
+						},
+						todo.description
+					),
 					e("button.destroy", { on: { click: [ destroyClickHandler, i ] } })
-				])
+				]),
+				e("input.edit",
+					{
+						props: { value: todo.description },
+						on: { blur: todoEditBlurHandler, keypress: [ todoEditKeypress, i, todo ] }
+					}
+				)
 			]);
 
 		return dom;
