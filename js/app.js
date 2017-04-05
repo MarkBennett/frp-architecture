@@ -14,6 +14,10 @@
 		todos: [
 			{ 
 				description: "Build a FRP todo demo",
+				completed: true
+			},
+			{
+				description: "Give an amazing talk",
 				completed: false
 			}
 		],
@@ -65,8 +69,6 @@
 				return state;
 		}
 	};
-
-	const store$ = actions$.startWith(initial_state).scan(reducer);
 
 	const e = h.default;
 	const patch = snabbdom.init([
@@ -188,5 +190,7 @@
 		return current_dom;
 	};
 
-	store$.scan(renderer, container).subscribe((val) => { "no-op" });
+	const store$ = actions$.startWith(initial_state).scan(reducer);
+
+	store$.scan(renderer, container).subscribe((_) => { "no-op" });
 })(window);
