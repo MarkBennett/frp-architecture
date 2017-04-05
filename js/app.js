@@ -3,6 +3,7 @@
 
 	const NEW_TODO_EDIT = "NEW_TODO_EDIT";
 	const TODOS_CREATE = "TODOS_CREATE";
+	const TODOS_CLEAR_CCOMPLETED = "TODOS_CLEAR_CCOMPLETED";
 	const TODO_CHANGE = "TODO_CHANGE";
 	const TODO_DONE = "TODO_DONE";
 	const TODO_DESTROY = "TODO_DESTROY";
@@ -53,6 +54,10 @@
 
 			case TODO_DESTROY:
 				state.todos.pop();
+				return state;
+
+			case TODOS_CLEAR_CCOMPLETED:
+				state.todos = state.todos.filter((todo) => !todo.completed);
 				return state;
 
 			default:
@@ -144,6 +149,12 @@
 		return dom;
 	};
 
+	const clearCompletedClickHandler = (e) => {
+		actions$.next({
+			type: TODOS_CLEAR_CCOMPLETED
+		});
+	};
+
 	const renderFooter = (state) => {
 		const incomplete_count = state.todos.filter((todo) => !todo.completed).length
 
@@ -153,7 +164,10 @@
 					e("strong", incomplete_count),
 					" item left"
 				]),
-				e("button.clear-completed", "Clear completed")
+				e("button.clear-completed",
+					{ on: { click: clearCompletedClickHandler } },
+					"Clear completed"
+				)
 			]);
 
 		return dom;
