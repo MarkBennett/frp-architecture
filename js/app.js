@@ -7,17 +7,66 @@
 	// For the purposes of this demonstration we're going to describe an FRA as
 	// an application which:
 	//
-	//   * Is composed of simple pure functions (without side effects)
-	//   * Reacts asynchronously to changing data and events
-	//   * Receives events from outside the application
-	//   * Pushes side effects outside the application
+	//   1) Is composed of pure functions
+	//   2) Reacts asynchronously to changing data and events
+	//   3) Receives events from outside the application
+	//   4) Pushes side effects outside the application
 	//
-	// This will also make heavy use of the Observable pattern, and RxJS.
-	// For this demonstration it's important to understand that an Observable
-	// is a sequence of values which emitted in a particular order over time.
+	//
+	//
+	//
+	//
+	//
+	// A pure function is a function where the return value is only determined
+	// by its input values, without observable side effects. Consider this
+	// function for example,
+	//
+	//     var state = { completed: false };
+	//     function changeStage() { state.completed = !state.completed; };
+	//
+	// `changeState()` isn't a pure function since its behaviour changes every
+	// time you call it, regardless of it's input and since it reaches outside
+	// the function to change `state.completed`.
+	//
+	// A pure version of this function looks like this:
+	//
+	//     var state = { completed: false };
+	//     function changeState(state) {
+	//			// Make a copy of the current state
+	//			let new_state = Object.assign({}, state);
+	//			new_state.completed = !state.completed;
+	//
+	//			return new_state;
+	//		};
+	//
+	// Notice that it takes the state as an input now instead of depending
+	// on it's environment to chnage it's behaviour. It also returns a
+	// new state, rather than modifying the existing one ensuring it doesn't
+	// have any side effects.
+	//
+	//
+	//
+	// This demo uses RxJS and ES2016, but for this demonstration it's
+	// important to understand that an Observable is a sequence of values
+	// which emitted in a particular order over time.
+	//
 	// Many operations on Observables are similar to those on Arrays or
 	// Iterables, however Observables also include operators which understand
 	// time such as `debounce()`, `throttle()`, `switchMap()`, etc.
+	//
+	//
+	// There are many architectures you can use in an FRP, but in this demo
+	// we're going to explore a simple one.
+	//
+	//           /---------/     /-------/     /------/
+	//          / INTENTS / ==> / MODEL / ==> / VIEW /
+	//         /---------/     /-------/     /------/
+	//
+	// Intents come in from outside the application, perhaps from the user
+	// interface, operating system or network.  The model is updated based on
+	// the intents, then the view is rendered based on the model.
+	//
+	// The rest of this demo fleshes out these ideas.
 	//=========================================================================
 
 
@@ -124,7 +173,8 @@
 	// THE "REDUCER"
 	//
 	// As new intents are emitted the reducer processes them and, given the
-	// current state, emits a new state.
+	// current state, emits a new state. If you've used Redux this should be
+	// familiar.
 	//
 	// Notice how this takes the old state and an intent then produces a new
 	// state from that. By producting a new state instead of modifying the old
@@ -391,15 +441,30 @@
 		return current_dom;
 	};
 
+	const app_element = document.getElementById("mytodo");
+
+
+
+
+
+
+
+
+
 	//=========================================================================
 	// WIRE IT UP
+	//
+	// Remember,
+	//
+	//     Intents -> Model -> View
+	//
 	//=========================================================================
 
-	// Intents -> Model -> View
 	// Create our state
-	const store$ = intents$.startWith(INITIAL_STATE).scan(reducer);
+	const state$ = intents$.startWith(INITIAL_STATE).scan(reducer);
 
-	// Render the state as it changes
-	const app_element = document.getElementById("mytodo");
-	store$.startWith(app_element).scan(renderer).subscribe((_) => { "no-op" });
+	// Render the view as the state changes
+	state$.startWith(app_element).scan(renderer).
+		subscribe((_) => { "no-op" });
+		
 })(window);
