@@ -84,12 +84,23 @@
 	//
 	// REACTS ASYNCHRONOUSLY
 	//
-	// This demo uses RxJS and Observables. It's important to understand that
-	// an Observable is a sequence of values which are emitted over time.
+	// A reactive application will react asynchronously to events and changes
+	// in the state of the application. This demo uses RxJS and Observables
+	// to accomplish this. You could also use callbacks or generators, but
+	// Observables provide a consitent and well understood way to manage this
+	// reactivity.
+	//
+	// It's important to understand that an Observable is a sequence of values
+	// which are emitted over time.
 	//
 	// Many operations on Observables are similar to those on Arrays or
 	// Iterables, however Observables also include operators which understand
 	// time such as `debounce()`, `throttle()`, `switchMap()`, etc.
+	//
+	// It's a convention in the RxJS community to signal a variable is an
+	// Observable with a `$` at the end of it's name. Whenever you see `$`
+	// at the end of a variable name like `intents$`, `model$` or
+	// `new_todo_keypress$`, just remember it's an Observable.
 	//
 	//
 	//
@@ -110,8 +121,18 @@
 	//         /---------/     /-------/     /------/
 	//
 	// Intents come in from outside the application, perhaps from the user
-	// interface, operating system or network.  The model is updated based on
-	// the intents, then the view is rendered based on the model.
+	// interface, operating system or network.  The model updates the existing
+	// state based on the incoming intents, then the new state is rendered by
+	// the view.
+	//
+	// Data always flows in one direction, and the model only updates the state
+	// based on incoming intents.
+	//
+	// In our system you can also think of network requests and other
+	// interactions which could produce side effects as external to our
+	// application and part of the output from the view. When they complete
+	// or produce a change it state outside the application a new intent must
+	// be generated to update the state.
 	//
 	// The rest of this demo fleshes out these ideas.
 	//=========================================================================
