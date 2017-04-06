@@ -53,6 +53,24 @@
 	//
 	//
 	//
+	//
+	// WHAT ARE THE BENEFITS?
+	//
+	//   1) Code without side effects is simpler to test and reason about
+	//   2) FPA is part of many popular frameworks (React/Redux, Angular, Vue.js, Elm)
+	//   3) FPA is well suited to handling asynchronous code (UI, networked, etc.)
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
 	// PURE FUNCTIONS
 	//
 	// A pure function is a function where the return value is only determined
