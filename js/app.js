@@ -146,6 +146,29 @@
 	// be generated to update the state.
 	//
 	// The rest of this demo fleshes out these ideas.
+	//
+	//
+	//
+	//
+	//
+	//
+	// FOLLOW ALONG!
+	//
+	// If you're watching on YouTube or want to follow along with me on your
+	// own you should clone this repo from:
+	//
+	//     https://github.com/MarkBennett/frp-architecture
+	//
+	// Use this command to clone my repo from your terminal:
+	//
+	//     git clone https://github.com/MarkBennett/frp-architecture.git
+	//
+	//
+	//
+	// PLEASE SAVE YOUR QUESTIONS UNTIL THE END
+	//
+	// I'll keep this quick so you won't have long to wait.
+	//
 	//=========================================================================
 
 
@@ -599,24 +622,31 @@
 
 
 	//=========================================================================
-	// CONCLUSIONS
+	// CONCLUSION
 	//
 	// Functional reactive applications are a reliable and testable way to
 	// handle complex asynchronous applications.
 	//
 	// To continue learning you should check out:
 	//
+	// * [This repo](https://github.com/MarkBennett/frp-architecture)
 	// * [RxJS](https://github.com/ReactiveX/rxjs)
 	// * [The introduction to Reactive Programming you've been missing](https://gist.github.com/staltz/868e7e9bc2a7b8c1f754)
 	// * [redux-observable](https://redux-observable.js.org/)
 	// * [Cycle.js](https://cycle.js.org/)
 	// * [Redux in a single line of code with RxJS](http://rudiyardley.com/redux-single-line-of-code-rxjs/)
 	//
-	// Big thank you's to the RxJS community. In particular,
+	// Big thank you's to the RxJS and JavaScript community. In particular,
 	//
 	// * [@benlesh](https://twitter.com/benlesh)
 	// * [@andrestaltz](https://twitter.com/andrestaltz)
 	// * [@rudiyardley](https://twitter.com/rudiyardley)
+	// * [TodoMVC](http://todomvc.com/)
+	//
+	//
+	// QUESTIONS?
+	//
+	// You can also reach me anytime on Twitte or Github @MarkBennett.
 	//
 	//=========================================================================
 
