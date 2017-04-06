@@ -392,6 +392,9 @@
 	});
 	const destroyClickHandler = (i) => destroy_click$.next(i);
 
+	// This is a good example of how Observables have a time component.
+	// We group events into 350ms windows with buffer, count the events,
+	// then filter and eliminate events with less than two clicks.
 	const todo_description_click$ = new Rx.Subject();
 	const todo_change_start_editing$ =
 		todo_description_click$.
