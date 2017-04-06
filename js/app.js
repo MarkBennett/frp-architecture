@@ -394,13 +394,17 @@
 
 	const todo_description_click$ = new Rx.Subject();
 	const todo_change_start_editing$ =
-		todo_description_click$.map(([i, todo]) => {
-			return {
-				type: TODO_CHANGE,
-				id: i,
-				payload:  Object.assign(todo, { being_edited: true })
-			};
-		});
+		todo_description_click$.
+			bufferTime(350).
+			filter((clicks) => clicks.length >= 2).
+			map((clicks) => {
+				let [i, todo] = clicks[0];
+				return {
+					type: TODO_CHANGE,
+					id: i,
+					payload:  Object.assign(todo, { being_edited: true })
+				};
+			});
 	const todoDescriptionClickHandler =
 		(i, todo) => todo_description_click$.next([i, todo]);
 
