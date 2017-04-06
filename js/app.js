@@ -24,8 +24,8 @@
 	//   |  _  | '_ \| '_ \| | |/ __/ _` | __| |/ _ \| '_ \/ __|
 	//   | | | | |_) | |_) | | | (_| (_| | |_| | (_) | | | \__ \
 	//   \_| |_/ .__/| .__/|_|_|\___\__,_|\__|_|\___/|_| |_|___/
-	// 	  | |   | |                                        
-	// 	  |_|   |_|                                        
+	// 	       | |   | |                                        
+	// 	       |_|   |_|                                        
 	//
 	//
 	//
@@ -33,8 +33,7 @@
 	//
 	//   1) Made up of pure functions
 	//   2) Reacts asynchronously to changing data and events
-	//   3) Receives events from outside the application (inputs)
-	//   4) Pushes side effects outside the application (outputs)
+	//   3) Receives inputs from outside the application (events)
 	//
 	//
 	//
@@ -389,28 +388,34 @@
 	const todoDescriptionClickHandler =
 		(i, todo) => todo_description_click$.next([i, todo]);
 
-	// TODO: CONTINUE EDITS HERE
-	const todoEditBlurHandler = (_) => {
-		intents$.next({
-			type: TODOS_CLEAR_ALL_EDITING
+	const todo_edit_blur$ = new Rx.Subject();
+	const todos_clear_all_editing$ =
+		todo_edit_blur$.map((_) => {
+			return {
+				type: TODOS_CLEAR_ALL_EDITING
+			};
 		});
-	};
+	const todoEditBlurHandler = (_) => todo_edit_blur$.next();
 
-	const todoEditKeypress = (i, todo, e) => {
-		intents$.next({
-			type: TODO_CHANGE,
-			id: i,
-			payload: { description: e.target.value }
+	const todo_edit_keypress$ = new Rx.Subject();
+	const todo_change_from_edit$ = todo_edit_keypress$.
+		map(([i, todo, e]) => {
+			return {
+				type: TODO_CHANGE,
+				id: i,
+				payload: { description: e.target.value }
+			};
 		});
-
-		if (e.which === ENTER_KEY) {
-			intents$.next({
+	const todo_change_done_editing$ = todo_edit_keypress$.
+		filter(([i, todo, e]) => e.which === ENTER_KEY).
+		map(([i, todo, e]) => {
+			return {
 				type: TODO_CHANGE,
 				id: i,
 				payload: { being_edited: false }
-			});
-		}
-	};
+			};
+		});
+	const todoEditKeypress = (i, todo, e) => todo_edit_keypress$.next([i, todo, e]);
 
 	const renderTodo = (todo, i) => {
 		const dom =
@@ -521,8 +526,8 @@
 	//=========================================================================
 
 	// Gather intents from the UI
-	const todo_change$ = Rx.Observable.merge(todo_change_completed$, todo_change_description$);
-	const merged_intents$ = Rx.Observable.merge(intents$, new_todo_edit$, todos_create$, todo_change$, todo_destroy$);
+	const todo_change$ = Rx.Observable.merge(todo_change_completed$, todo_change_description$, todo_change_from_edit$, todo_change_done_editing$);
+	const merged_intents$ = Rx.Observable.merge(intents$, new_todo_edit$, todos_create$, todo_change$, todo_destroy$, todos_clear_all_editing$);
 
 	// Create our state
 	const state$ = merged_intents$.startWith(INITIAL_STATE).scan(reducer);
