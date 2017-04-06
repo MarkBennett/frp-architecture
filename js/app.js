@@ -2,20 +2,50 @@
 	'use strict';
 
 	//=========================================================================
-	// FUNCTIONAL REACTIVE ARCHITECTURE (FRA)
+	//   ______                _   _                   _        
+	//   |  ___|              | | (_)                 | |       
+	//   | |_ _   _ _ __   ___| |_ _  ___  _ __   __ _| |       
+	//   |  _| | | | '_ \ / __| __| |/ _ \| '_ \ / _` | |       
+	//   | | | |_| | | | | (__| |_| | (_) | | | | (_| | |       
+	//   \_|  \__,_|_| |_|\___|\__|_|\___/|_| |_|\__,_|_|       
+    // 
+	//														
+	//   ______                _   _                            
+	//   | ___ \              | | (_)                           
+	//   | |_/ /___  __ _  ___| |_ ___   _____                  
+	//   |    // _ \/ _` |/ __| __| \ \ / / _ \                 
+	//   | |\ \  __/ (_| | (__| |_| |\ V /  __/                 
+	//   \_| \_\___|\__,_|\___|\__|_| \_/ \___|                 
+	//													
+	//													
+	//     ___              _ _           _   _                 
+	//    / _ \            | (_)         | | (_)                
+	//   / /_\ \_ __  _ __ | |_  ___ __ _| |_ _  ___  _ __  ___ 
+	//   |  _  | '_ \| '_ \| | |/ __/ _` | __| |/ _ \| '_ \/ __|
+	//   | | | | |_) | |_) | | | (_| (_| | |_| | (_) | | | \__ \
+	//   \_| |_/ .__/| .__/|_|_|\___\__,_|\__|_|\___/|_| |_|___/
+	// 	  | |   | |                                        
+	// 	  |_|   |_|                                        
 	//
-	// For the purposes of this demonstration we're going to describe an FRA as
-	// an application which:
 	//
-	//   1) Is composed of pure functions
+	//
+	// A Functional Reactive Application (FRA) is:
+	//
+	//   1) Made up of pure functions
 	//   2) Reacts asynchronously to changing data and events
-	//   3) Receives events from outside the application
-	//   4) Pushes side effects outside the application
+	//   3) Receives events from outside the application (inputs)
+	//   4) Pushes side effects outside the application (outputs)
 	//
 	//
 	//
 	//
 	//
+	//
+	//
+	//
+	//
+	//
+	// PURE FUNCTIONS
 	//
 	// A pure function is a function where the return value is only determined
 	// by its input values, without observable side effects. Consider this
@@ -46,14 +76,32 @@
 	//
 	//
 	//
-	// This demo uses RxJS and ES2016, but for this demonstration it's
-	// important to understand that an Observable is a sequence of values
-	// which emitted in a particular order over time.
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	// REACTS ASYNCHRONOUSLY
+	//
+	// This demo uses RxJS and Observables. It's important to understand that
+	// an Observable is a sequence of values which are emitted over time.
 	//
 	// Many operations on Observables are similar to those on Arrays or
 	// Iterables, however Observables also include operators which understand
 	// time such as `debounce()`, `throttle()`, `switchMap()`, etc.
 	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	// ARCHITECTURE OVERVIEW
 	//
 	// There are many architectures you can use in an FRP, but in this demo
 	// we're going to explore a simple one.
@@ -181,6 +229,8 @@
 	// we avoid side effects and ensure we can test all behaviour by testing
 	// the output.
 	//
+	// It's a pure function!
+	//
 	// In larger applications a library like immutable.js can make writing
 	// side-effect free functions more performant.
 	//=========================================================================
@@ -273,19 +323,16 @@
 		snabbdom_props.default
 	]);
 
-	const newTodoInputKeypressHandler = (e) => {
-		intents$.next({
+	const new_todo_keypress$ = new Rx.Subject();
+	const new_todo_edit$ = new_todo_keypress$.map((e) => ({
 			type: NEW_TODO_EDIT,
 			payload: e.target.value
-		})
-		
-		if (e.which === ENTER_KEY) {
-			intents$.next({
-				type: TODOS_CREATE,
-				payload: e.target.value
-			});
-		}
-	};
+		}));
+	const todos_create$ = new_todo_keypress$.filter((e) => e.which === ENTER_KEY).map((e) => ({
+			type: TODOS_CREATE,
+			payload: e.target.value
+		}));
+	const newTodoInputKeypressHandler = (e) => new_todo_keypress$.next(e);
 
 	const renderHeader = (state) => {
 		const dom =
@@ -460,11 +507,13 @@
 	//
 	//=========================================================================
 
+	const merged_intents$ = Rx.Observable.merge(intents$, new_todo_edit$, todos_create$);
+
 	// Create our state
-	const state$ = intents$.startWith(INITIAL_STATE).scan(reducer);
+	const state$ = merged_intents$.startWith(INITIAL_STATE).scan(reducer);
 
 	// Render the view as the state changes
 	state$.startWith(app_element).scan(renderer).
 		subscribe((_) => { "no-op" });
-		
+
 })(window);
