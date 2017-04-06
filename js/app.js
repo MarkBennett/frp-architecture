@@ -25,7 +25,14 @@
 	//   | | | | |_) | |_) | | | (_| (_| | |_| | (_) | | | \__ \
 	//   \_| |_/ .__/| .__/|_|_|\___\__,_|\__|_|\___/|_| |_|___/
 	// 	       | |   | |                                        
-	// 	       |_|   |_|                                        
+	// 	       |_|   |_|
+	//
+	//
+	//   ___         ____  __  __          _   ___                    _   _   
+	//  | _ )_  _   / __ \|  \/  |__ _ _ _| |_| _ ) ___ _ _  _ _  ___| |_| |_ 
+	//  | _ \ || | / / _` | |\/| / _` | '_| / / _ \/ -_) ' \| ' \/ -_)  _|  _|
+	//  |___/\_, | \ \__,_|_|  |_\__,_|_| |_\_\___/\___|_||_|_||_\___|\__|\__|
+	//       |__/   \____/                                                    
 	//
 	//
 	//
@@ -34,6 +41,8 @@
 	//   1) Made up of pure functions
 	//   2) Reacts asynchronously to changing data and events
 	//   3) Receives inputs from outside the application (events)
+	//
+	//
 	//
 	//
 	//
@@ -72,6 +81,8 @@
 	// on it's environment to chnage it's behaviour. It also returns a
 	// new state, rather than modifying the existing one ensuring it doesn't
 	// have any side effects.
+	//
+	//
 	//
 	//
 	//
