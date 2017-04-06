@@ -377,7 +377,7 @@
 	const destroyClickHandler = (i) => destroy_click$.next(i);
 
 	const todo_description_click$ = new Rx.Subject();
-	const todo_change_description$ =
+	const todo_change_start_editing$ =
 		todo_description_click$.map(([i, todo]) => {
 			return {
 				type: TODO_CHANGE,
@@ -398,7 +398,7 @@
 	const todoEditBlurHandler = (_) => todo_edit_blur$.next();
 
 	const todo_edit_keypress$ = new Rx.Subject();
-	const todo_change_from_edit$ = todo_edit_keypress$.
+	const todo_change_description_edit$ = todo_edit_keypress$.
 		map(([i, todo, e]) => {
 			return {
 				type: TODO_CHANGE,
@@ -448,11 +448,13 @@
 		return dom;
 	};
 
-	const toggleAllClickHandler = (e) => {
-		intents$.next({
+	const toggle_all_click$ = new Rx.Subject();
+	const todos_toggle_all$ = toggle_all_click$.map((_) => {
+		return {
 			type: TODOS_TOGGLE_ALL
-		});
-	};
+		};
+	});
+	const toggleAllClickHandler = (e) => toggle_all_click$.next(e);
 
 	const renderMain = (state) => {
 		const todos_dom = state.todos.map(renderTodo);
@@ -467,11 +469,13 @@
 		return dom;
 	};
 
-	const clearCompletedClickHandler = (e) => {
-		intents$.next({
+	const clear_completed_click$ = new Rx.Subject();
+	const todos_clear_completed$ = clear_completed_click$.map((_) => {
+		return {
 			type: TODOS_CLEAR_CCOMPLETED
-		});
-	};
+		};
+	});
+	const clearCompletedClickHandler = (e) => clear_completed_click$.next(e);
 
 	const renderFooter = (state) => {
 		const incomplete_count = state.todos.filter((todo) => !todo.completed).length
@@ -526,8 +530,22 @@
 	//=========================================================================
 
 	// Gather intents from the UI
-	const todo_change$ = Rx.Observable.merge(todo_change_completed$, todo_change_description$, todo_change_from_edit$, todo_change_done_editing$);
-	const merged_intents$ = Rx.Observable.merge(intents$, new_todo_edit$, todos_create$, todo_change$, todo_destroy$, todos_clear_all_editing$);
+	const todo_change$ =
+		Rx.Observable.merge(
+			todo_change_completed$,
+			todo_change_start_editing$,
+			todo_change_description_edit$,
+			todo_change_done_editing$);
+	const merged_intents$ =
+		Rx.Observable.merge(
+			intents$,
+			new_todo_edit$,
+			todos_create$,
+			todo_change$,
+			todo_destroy$,
+			todos_clear_all_editing$,
+			todos_toggle_all$,
+			todos_clear_completed$);
 
 	// Create our state
 	const state$ = merged_intents$.startWith(INITIAL_STATE).scan(reducer);
