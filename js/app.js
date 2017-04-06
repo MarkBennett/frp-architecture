@@ -328,11 +328,16 @@
 			type: NEW_TODO_EDIT,
 			payload: e.target.value
 		}));
-	const todos_create$ = new_todo_keypress$.filter((e) => e.which === ENTER_KEY).map((e) => ({
-			type: TODOS_CREATE,
-			payload: e.target.value
-		}));
-	const newTodoInputKeypressHandler = (e) => new_todo_keypress$.next(e);
+
+	const todos_create$ = 
+		new_todo_keypress$.
+			filter((e) => e.which === ENTER_KEY).
+			map((e) => ({
+				type: TODOS_CREATE,
+				payload: e.target.value
+			}));
+	const newTodoInputKeypressHandler =
+		(e) => new_todo_keypress$.next(e);
 
 	const renderHeader = (state) => {
 		const dom =
@@ -350,33 +355,41 @@
 		return dom;	
 	};
 
-	const todoCheckboxChangedHandler = (i, todo) => {
-		intents$.next({
+	const todo_checkbox_change$ = new Rx.Subject();
+	const todo_change_completed$ = todo_checkbox_change$.map(([i, todo]) => {
+		return {
 			type: TODO_CHANGE,
 			id: i,
 			payload: {
-				description: todo.description,
-				completed: !todo.completed,
-				being_edited: false
+				completed: !todo.completed
 			}
-		});
-	}
+		};
+	});
+	const todoCheckboxChangedHandler =
+		(i, todo) => todo_checkbox_change$.next([i, todo]);
 
-	const destroyClickHandler = (i) => {
-		intents$.next({
+	const destroy_click$ = new Rx.Subject();
+	const todo_destroy$ = destroy_click$.map((i) => {
+		return {
 			type: TODO_DESTROY,
 			id: i
-		});
-	};
+		};
+	});
+	const destroyClickHandler = (i) => destroy_click$.next(i);
 
-	const todoDescriptionClickHandler = (i, todo) => {
-		intents$.next({
-			type: TODO_CHANGE,
-			id: i,
-			payload:  Object.assign(todo, { being_edited: true })
+	const todo_description_click$ = new Rx.Subject();
+	const todo_change_description$ =
+		todo_description_click$.map(([i, todo]) => {
+			return {
+				type: TODO_CHANGE,
+				id: i,
+				payload:  Object.assign(todo, { being_edited: true })
+			};
 		});
-	};
+	const todoDescriptionClickHandler =
+		(i, todo) => todo_description_click$.next([i, todo]);
 
+	// TODO: CONTINUE EDITS HERE
 	const todoEditBlurHandler = (_) => {
 		intents$.next({
 			type: TODOS_CLEAR_ALL_EDITING
@@ -507,7 +520,9 @@
 	//
 	//=========================================================================
 
-	const merged_intents$ = Rx.Observable.merge(intents$, new_todo_edit$, todos_create$);
+	// Gather intents from the UI
+	const todo_change$ = Rx.Observable.merge(todo_change_completed$, todo_change_description$);
+	const merged_intents$ = Rx.Observable.merge(intents$, new_todo_edit$, todos_create$, todo_change$, todo_destroy$);
 
 	// Create our state
 	const state$ = merged_intents$.startWith(INITIAL_STATE).scan(reducer);
@@ -515,5 +530,34 @@
 	// Render the view as the state changes
 	state$.startWith(app_element).scan(renderer).
 		subscribe((_) => { "no-op" });
+
+
+
+
+
+
+
+
+	//=========================================================================
+	// CONCLUSIONS
+	//
+	// Functional reactive applications are a reliable and testable way to
+	// handle complex asynchronous applications.
+	//
+	// To continue learning you should check out:
+	//
+	// * [RxJS](https://github.com/ReactiveX/rxjs)
+	// * [The introduction to Reactive Programming you've been missing](https://gist.github.com/staltz/868e7e9bc2a7b8c1f754)
+	// * [redux-observable](https://redux-observable.js.org/)
+	// * [Cycle.js](https://cycle.js.org/)
+	// * [Redux in a single line of code with RxJS](http://rudiyardley.com/redux-single-line-of-code-rxjs/)
+	//
+	// Big thank you's to the RxJS community. In particular,
+	//
+	// * [@benlesh](https://twitter.com/benlesh)
+	// * [@andrestaltz](https://twitter.com/andrestaltz)
+	// * [@rudiyardley](https://twitter.com/rudiyardley)
+	//
+	//=========================================================================
 
 })(window);
