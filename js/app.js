@@ -174,45 +174,6 @@
 
 
 
-	//=========================================================================
-	// THE INTENTS
-	//
-	// An intent describe how we would like our model to change at any given
-	// moment in time. Each intent includes all the information neccesary to
-	// modify the current state.
-	//
-	// The `intents$` is an observable which collects and emits new intents
-	// throughout the lifetime of the application.
-	//
-	// For example, if we want to edit an existing todo we'd emit a new intent
-	// like this:
-	//
-	//     {
-	//         type: TODO_CHANGE,
-	//         id: 1,
-	//         payload: {
-	//             description: "New description"
-	//         }
-	//     }
-	//
-	// This intent clearly identifies it's type, the todo affected, and the
-	// value to change. The payload contents is specific to each intent.
-	//=========================================================================
-
-	const intents$ =  new Rx.Subject();
-
-	window.intents$ = intents$;
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -520,13 +481,32 @@
 
 
 
+
+
+
 	//=========================================================================
-	// WIRE IT UP
+	// THE INTENTS
 	//
-	// Remember,
+	// An intent describe how we would like our model to change at any given
+	// moment in time. Each intent includes all the information neccesary to
+	// modify the current state.
 	//
-	//     Intents -> Model -> View
+	// The `intents$` is an observable which collects and emits new intents
+	// throughout the lifetime of the application.
 	//
+	// For example, if we want to edit an existing todo we'd emit a new intent
+	// like this:
+	//
+	//     {
+	//         type: TODO_CHANGE,
+	//         id: 1,
+	//         payload: {
+	//             description: "New description"
+	//         }
+	//     }
+	//
+	// This intent clearly identifies it's type, the todo affected, and the
+	// value to change. The payload contents is specific to each intent.
 	//=========================================================================
 
 	// Gather intents from the UI
@@ -536,9 +516,8 @@
 			todo_change_start_editing$,
 			todo_change_description_edit$,
 			todo_change_done_editing$);
-	const merged_intents$ =
+	const intents$ =
 		Rx.Observable.merge(
-			intents$,
 			new_todo_edit$,
 			todos_create$,
 			todo_change$,
@@ -547,12 +526,38 @@
 			todos_toggle_all$,
 			todos_clear_completed$);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+	//=========================================================================
+	// WIRE IT UP
+	//
+	// Remember,
+	//
+	//     Intents -> Model -> View
+	//
+	//=========================================================================
+
+
 	// Create our state
-	const state$ = merged_intents$.startWith(INITIAL_STATE).scan(reducer);
+	const state$ = intents$.startWith(INITIAL_STATE).scan(reducer);
 
 	// Render the view as the state changes
 	state$.startWith(app_element).scan(renderer).
 		subscribe((_) => { "no-op" });
+
+
+
 
 
 
